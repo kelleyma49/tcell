@@ -189,7 +189,8 @@ func (s *cScreen) Init() error {
 	// 24-bit color is opt-in for now, because we can't figure out
 	// to make it work consistently.
 	if os.Getenv("TCELL_TRUECOLOR") == "enable" {
-		s.setOutMode(modeVtOutput | modeNoAutoNL)
+		//s.setInMode(modeCooked | modeVtInput | modeEnableExtendFlags)
+		s.setOutMode(modeProcessedOutput | modeVtOutput | modeNoAutoNL)
 		var omode uint32
 		s.getOutMode(&omode)
 		if omode&modeVtOutput == modeVtOutput {
@@ -198,7 +199,7 @@ func (s *cScreen) Init() error {
 	} else {
 		s.setOutMode(0)
 	}
-	s.setOutMode(modeCooked)
+	//s.setOutMode(modeCooked)
 
 	s.clearScreen(s.style)
 	s.hideCursor()
@@ -1026,11 +1027,13 @@ const (
 	modeResizeEn        = 0x0008
 	modeCooked          = 0x0001
 	modeVtInput         = 0x0200
+	modeEnableExtendFlags = 0x0080
 
 	// Output modes
 	modeWrapEOL  uint32 = 0x0002
 	modeVtOutput        = 0x0004
 	modeNoAutoNL        = 0x0008
+	modeProcessedOutput = 0x0001
 )
 
 func (s *cScreen) setInMode(mode uint32) error {
